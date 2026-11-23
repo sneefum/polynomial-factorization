@@ -8,6 +8,7 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/ui/TextInput.hpp>
+#include <Geode/utils/general.hpp>
 #include <Geode/cocos/CCDirector.h>
 #include <Geode/utils/VMTHookManager.hpp>
 #include <Geode/cocos/label_nodes/CCLabelBMFont.h>
@@ -85,24 +86,24 @@ protected:
                 "x^2{}{}{}{}{} = 0",
                 p_a == 0 ? "" : (p_a >= 0 ? " + " : " - "),
                 p_a == 0 ? "" : (abs(p_a) == 1 ? "" : std::to_string(abs(p_a))),
-                p_b == 0 ? "" : "x",
+                p_a == 0 ? "" : "x",
                 p_b == 0 ? "" : (p_b >= 0 ? " + " : " - "),
-                p_b == 0 ? "" : std::to_string(abs(p_b))
+                std::to_string(abs(p_b))
             ).c_str(), "bigFont.fnt");
         } else if (degree == 3) {
             int p_a = a + b + c;
             int p_b = (a*b) + (a*c) + (b*c);
             int p_c = a * b * c;
             label = CCLabelBMFont::create(fmt::format(
-                "x^3{}{}{}{}{}{}{} = 0",
+                "x^3{}{}{}{}{}{}{}{} = 0",
                 p_a == 0 ? "" : (p_a >= 0 ?  " + " : " - "),
                 p_a == 0 ? "" : (abs(p_a) == 1 ? "" : std::to_string(abs(p_a))),
-                p_b == 0 ? "" : "x^2",
+                p_a == 0 ? "" : "x^2",
                 p_b == 0 ? "" : (p_b >= 0 ?  " + " : " - "),
                 p_b == 0 ? "" : (abs(p_b) == 1 ? "" : std::to_string(abs(p_b))),
-                p_c == 0 ? "" : "x",
+                p_b == 0 ? "" : "x",
                 p_c == 0 ? "" : (p_c >= 0 ?  " + " : " - "),
-                p_c == 0 ? "" : std::to_string(abs(p_c))
+                std::to_string(abs(p_c))
             ).c_str(), "bigFont.fnt");
         } else {
             int p_a = a + b + c + d;
@@ -121,7 +122,7 @@ protected:
                 p_c == 0 ? "" : (abs(p_c) == 1 ? "" : std::to_string(abs(p_c))),
                 p_c == 0 ? "" : "x",
                 p_d == 0 ? "" : (p_d >= 0 ?  " + " : " - "),
-                p_d == 0 ? "" : std::to_string(abs(p_d))
+                std::to_string(abs(p_d))
             ).c_str(), "bigFont.fnt");
             label->setScale(0.6);
         }
@@ -177,16 +178,27 @@ protected:
 
     void onSubmit(CCObject*) {
         bool correct = true;
-        try {
-            int a = 0 - std::stoi(m_input_a->getString());
-            int b = 0 - std::stoi(m_input_b->getString());
-            int c, d;
-            if (m_degree >= 3) {
-                c = 0 - std::stoi(m_input_c->getString());
-            }
-            if (m_degree >= 4) {
-                d = 0 - std::stoi(m_input_d->getString());
-            }
+        // turns out i cant use trycatch. whoops!
+        // sorry about that.            - sneefum
+        Result<int, geode::utils::NumParseError> a_res = numFromString<int>(m_input_a->getString()); 
+        Result<int, geode::utils::NumParseError> b_res = numFromString<int>(m_input_b->getString());
+        Result<int, geode::utils::NumParseError> c_res = numFromString<int>("0"); // this is the best way i could find to initialize these
+        if (m_degree >= 3) {
+            c_res = numFromString<int>(m_input_c->getString());
+        }
+        Result<int, geode::utils::NumParseError> d_res = numFromString<int>("0"); // im so sorry
+        if (m_degree >= 4) {
+            d_res = numFromString<int>(m_input_d->getString());
+        }
+
+        if (!a_res.isOk() || !b_res.isOk() || !c_res.isOk() || !d_res.isOk())
+            correct = false;
+
+        if (correct) {
+            int a = 0 - (a_res.unwrap());
+            int b = 0 - (b_res.unwrap());
+            int c = 0 - (c_res.unwrap());
+            int d = 0 - (d_res.unwrap());
             
             std::array<int, 4> values{};
             std::array<int, 4> expected{};
@@ -210,15 +222,12 @@ protected:
                 if (values[i] != expected[i])
                     correct = false;
             }
-        } catch (...) {
-            correct = false;
         }
+        
         if (correct) {
             answered = true;
             this->onClose(nullptr);
             PlayLayer::get()->resetLevel();
-        } else {
-
         }
     }
 
@@ -253,7 +262,7 @@ class $modify(MyPlayLayer, PlayLayer) {
                 c = (rand() % ((range * 2) + 1)) - range;
                 d = (rand() % ((range * 2) + 1)) - range;
                 answered = false;
-                #if !defined(GEODE_IS_IOS) && !defined(GEODE_IS_ANDROID32) && !defined(GEODE_IS_ANDROID64)
+                #if !defined(GEODE_IS_IOS) && !defined(GEODE_IS_ANDROID32) && !defined(GEODE_IS_ANDROID64) // phones dont have cursors
                 director->getOpenGLView()->showCursor(true);
                 #endif
                 PolynomialPopup::create(polynomial_degree, a, b, c, d)->show();
