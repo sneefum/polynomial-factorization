@@ -1,0 +1,56 @@
+{
+	"geode": "6.0.0-beta.1",
+	"gd": {
+		"win": "2.2091",
+		"android": "2.2091",
+		"mac": "2.2091",
+		"ios": "2.2091"
+	},
+	"id": "sneefum.polynomial-factorization",
+	"name": "Polynomial Factorization",
+	"version": "v1.0.0",
+	"developer": "sneefum",
+	"description": "For when you want to play GD but you have a math test tomorrow",
+    "links": {
+        "source": "https://github.com/sneefum/polynomial-factorization"
+    },
+	"issues": {
+		"url": "https://github.com/sneefum/polynomial-factorization/issues",
+		"info": "If you find any bugs in the mod please report them at our Github issues page!"
+	},
+    "settings": {
+        "polynomial-degree": {
+            "name": "Degree",
+            "description": "The highest power the polynomial should have. (This is also how many solutions the equation should have, but that doesn't mean it makes it easier!)",
+            "type": "int",
+            "min": 2,
+            "max": 4,
+            "default": 2,
+            "control": {
+                "slider": true
+            }
+        },
+        "frequency": {
+            "name": "Frequency",
+            "description": "How many attempts you can do before the next polynomial appears",
+            "type": "int",
+            "min": 1,
+            "max": 100,
+            "default": 20,
+            "control": {
+                "slider": true
+            }
+        },
+        "range": {
+            "name": "Range",
+            "description": "The range of numbers that can be selected as answers, going from positive range to negative range (inclusive).",
+            "type": "int",
+            "min": 4,
+            "max": 32,
+            "default": 8,
+            "control": {
+                "slider": true
+            }
+        }
+    }
+}
