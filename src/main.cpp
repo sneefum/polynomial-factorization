@@ -220,7 +220,7 @@ protected:
         }
     }
 
-    void keyBackClicked() override {}
+    void keyBackClicked() override {} // no esc key for you!! :3
 
 public:
     static PolynomialPopup* create(int degree, int a, int b, int c = 0, int d = 0) {
@@ -251,7 +251,9 @@ class $modify(MyPlayLayer, PlayLayer) {
                 c = (rand() % ((range * 2) + 1)) - range;
                 d = (rand() % ((range * 2) + 1)) - range;
                 answered = false;
+                #if !defined(GEODE_IS_IOS) && !defined(GEODE_IS_ANDROID32) && !defined(GEODE_IS_ANDROID64)
                 director->getOpenGLView()->showCursor(true);
+                #endif
                 PolynomialPopup::create(polynomial_degree, a, b, c, d)->show();
             }
         }
@@ -265,7 +267,9 @@ class $modify(MyPlayLayer, PlayLayer) {
         if (!answered) {
             return;
         } else {
+            #if !defined(GEODE_IS_IOS) && !defined(GEODE_IS_ANDROID32) && !defined(GEODE_IS_ANDROID64)
             director->getOpenGLView()->showCursor(false);
+            #endif
             PlayLayer::resetLevel();
         }
     }
