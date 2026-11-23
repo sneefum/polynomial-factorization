@@ -8,13 +8,11 @@ Questions include:
 - Cubics
 - Quartics (Why would you torture yourself like this?)
 
-
-
 ## Planned Features:
 - Saving questions even if you close the game
 - Quintics :skull:
 
-
-
 ## Ooh! Ooh! I found a bug!
 Report it at https://github.com/sneefum/polynomial-factorization/issues, and if you are really good at programming, leave a fix while you're at it. ;3
+
+*Thank you to the geode team for making this mod possible!*
