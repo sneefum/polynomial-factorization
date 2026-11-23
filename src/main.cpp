@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <algorithm>
 
+#include <fmt/format.h>
+
 #include <Geode/Geode.hpp>
 #include <Geode/ui/TextInput.hpp>
 #include <Geode/cocos/CCDirector.h>
@@ -69,7 +71,7 @@ protected:
 
         this->m_closeBtn->setVisible(false);
 
-        this->setTitle(std::format(
+        this->setTitle(fmt::format(
             "Find all {} roots of the following {} to play the next attempt!",
             degree,
             polynomial_names[degree]
@@ -79,7 +81,7 @@ protected:
         if (degree == 2) {
             int p_a = a + b;
             int p_b = a * b;
-            label = CCLabelBMFont::create(std::format(
+            label = CCLabelBMFont::create(fmt::format(
                 "x^2{}{}{}{}{} = 0",
                 p_a == 0 ? "" : (p_a >= 0 ? " + " : " - "),
                 p_a == 0 ? "" : (abs(p_a) == 1 ? "" : std::to_string(abs(p_a))),
@@ -91,7 +93,7 @@ protected:
             int p_a = a + b + c;
             int p_b = (a*b) + (a*c) + (b*c);
             int p_c = a * b * c;
-            label = CCLabelBMFont::create(std::format(
+            label = CCLabelBMFont::create(fmt::format(
                 "x^3{}{}{}{}{}{}{} = 0",
                 p_a == 0 ? "" : (p_a >= 0 ?  " + " : " - "),
                 p_a == 0 ? "" : (abs(p_a) == 1 ? "" : std::to_string(abs(p_a))),
@@ -107,7 +109,7 @@ protected:
             int p_b = (a*b) + (a*c) + (a*d) + (b*c) + (b*d) + (c*d);
             int p_c = (a*b*c) + (a*b*d) + (a*c*d) + (b*c*d);
             int p_d = a * b * c * d;
-            label = CCLabelBMFont::create(std::format(
+            label = CCLabelBMFont::create(fmt::format(
                 "x^4{}{}{}{}{}{}{}{}{}{}{} = 0",
                 p_a == 0 ? "" : (p_a >= 0 ?  " + " : " - "),
                 p_a == 0 ? "" : (abs(p_a) == 1 ? "" : std::to_string(abs(p_a))),
