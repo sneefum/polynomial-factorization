@@ -88,7 +88,7 @@ protected:
                 p_a == 0 ? "" : (abs(p_a) == 1 ? "" : std::to_string(abs(p_a))),
                 p_a == 0 ? "" : "x",
                 p_b == 0 ? "" : (p_b >= 0 ? " + " : " - "),
-                std::to_string(abs(p_b))
+                p_b == 0 ? "" : std::to_string(abs(p_b))
             ).c_str(), "bigFont.fnt");
         } else if (degree == 3) {
             int p_a = a + b + c;
@@ -103,7 +103,7 @@ protected:
                 p_b == 0 ? "" : (abs(p_b) == 1 ? "" : std::to_string(abs(p_b))),
                 p_b == 0 ? "" : "x",
                 p_c == 0 ? "" : (p_c >= 0 ?  " + " : " - "),
-                std::to_string(abs(p_c))
+                p_c == 0 ? "" : std::to_string(abs(p_c))
             ).c_str(), "bigFont.fnt");
         } else {
             int p_a = a + b + c + d;
@@ -122,7 +122,7 @@ protected:
                 p_c == 0 ? "" : (abs(p_c) == 1 ? "" : std::to_string(abs(p_c))),
                 p_c == 0 ? "" : "x",
                 p_d == 0 ? "" : (p_d >= 0 ?  " + " : " - "),
-                std::to_string(abs(p_d))
+                p_d == 0 ? "" : std::to_string(abs(p_d))
             ).c_str(), "bigFont.fnt");
             label->setScale(0.6);
         }
