@@ -199,8 +199,8 @@ protected:
                 expected = std::array{m_a, m_b, m_c, m_d};
             }
 
-            sort(values.begin(), values.end());
-            sort(expected.begin(), expected.end());
+            std::sort(values.begin(), values.end());
+            std::sort(expected.begin(), expected.end());
 
             int size = m_degree;
 
