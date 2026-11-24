@@ -7,8 +7,10 @@
 #include <cstdlib>
 #include <algorithm>
 #include <fmt/format.h>
+#include <arc/time/Sleep.hpp>
 
 #include <Geode/Geode.hpp>
+#include <Geode/utils/async.hpp>
 #include <Geode/ui/TextInput.hpp>
 #include <Geode/utils/general.hpp>
 #include <Geode/cocos/CCDirector.h>
@@ -50,7 +52,7 @@ $on_mod(Loaded) {
     });
 }
 
-std::string filterNumbers(std::string const& text) {
+/* std::string filterNumbers(std::string const& text) {
     std::string result = "";
 
     for (int i = 0; i < text.size(); i++) {
@@ -65,7 +67,7 @@ std::string filterNumbers(std::string const& text) {
     }
 
     return result;
-}
+} */
 
 class PolynomialPopup : public geode::Popup {
 protected:
@@ -152,86 +154,41 @@ protected:
         if (degree == 2) {
             m_input_a = TextInput::create(100.f, "Root 1");
             m_input_a->setPosition({185.f, 60.f});
-            m_input_a->setCallback([this](const std::string& text) {
-                auto filtered = filterNumbers(text);
-                if (text != filtered) {
-                    m_input_a->setString(filtered);
-                }
-            });
+            m_input_a->setCommonFilter(geode::CommonFilter::Int);
             m_mainLayer->addChild(m_input_a);
             m_input_b = TextInput::create(100.f, "Root 2");
             m_input_b->setPosition({295.f, 60.f});
-            m_input_b->setCallback([this](const std::string& text) {
-                auto filtered = filterNumbers(text);
-                if (text != filtered) {
-                    m_input_b->setString(filtered);
-                }
-            });
+            m_input_b->setCommonFilter(geode::CommonFilter::Int);    
             m_mainLayer->addChild(m_input_b);
         } else if (degree == 3) {
             m_input_a = TextInput::create(100.f, "Root 1");
             m_input_a->setPosition({130.f, 60.f});
-            m_input_a->setCallback([this](const std::string& text) {
-                auto filtered = filterNumbers(text);
-                if (text != filtered) {
-                    m_input_a->setString(filtered);
-                }
-            });
+            m_input_a->setCommonFilter(geode::CommonFilter::Int);
             m_mainLayer->addChild(m_input_a);
             m_input_b = TextInput::create(100.f, "Root 2");
             m_input_b->setPosition({240.f, 60.f});
-            m_input_b->setCallback([this](const std::string& text) {
-                auto filtered = filterNumbers(text);
-                if (text != filtered) {
-                    m_input_b->setString(filtered);
-                }
-            });
+            m_input_b->setCommonFilter(geode::CommonFilter::Int);
             m_mainLayer->addChild(m_input_b);
             m_input_c = TextInput::create(100.f, "Root 3");
             m_input_c->setPosition({350.f, 60.f});
-            m_input_c->setCallback([this](const std::string& text) {
-                auto filtered = filterNumbers(text);
-                if (text != filtered) {
-                    m_input_c->setString(filtered);
-                }
-            });
+            m_input_c->setCommonFilter(geode::CommonFilter::Int);
             m_mainLayer->addChild(m_input_c);
         } else {
             m_input_a = TextInput::create(100.f, "Root 1");
             m_input_a->setPosition({75.f, 60.f});
-            m_input_a->setCallback([this](const std::string& text) {
-                auto filtered = filterNumbers(text);
-                if (text != filtered) {
-                    m_input_a->setString(filtered);
-                }
-            });
+            m_input_a->setCommonFilter(geode::CommonFilter::Int);
             m_mainLayer->addChild(m_input_a);
             m_input_b = TextInput::create(100.f, "Root 2");
             m_input_b->setPosition({185.f, 60.f});
-            m_input_b->setCallback([this](const std::string& text) {
-                auto filtered = filterNumbers(text);
-                if (text != filtered) {
-                    m_input_b->setString(filtered);
-                }
-            });
+            m_input_b->setCommonFilter(geode::CommonFilter::Int);
             m_mainLayer->addChild(m_input_b);
             m_input_c = TextInput::create(100.f, "Root 3");
             m_input_c->setPosition({295.f, 60.f});
-            m_input_c->setCallback([this](const std::string& text) {
-                auto filtered = filterNumbers(text);
-                if (text != filtered) {
-                    m_input_c->setString(filtered);
-                }
-            });
+            m_input_c->setCommonFilter(geode::CommonFilter::Int);
             m_mainLayer->addChild(m_input_c);
             m_input_d = TextInput::create(100.f, "Root 4");
             m_input_d->setPosition({405.f, 60.f});
-            m_input_d->setCallback([this](const std::string& text) {
-                auto filtered = filterNumbers(text);
-                if (text != filtered) {
-                    m_input_d->setString(filtered);
-                }
-            });
+            m_input_d->setCommonFilter(geode::CommonFilter::Int);
             m_mainLayer->addChild(m_input_d);
         }
 
@@ -305,12 +262,14 @@ protected:
             #if !defined(GEODE_IS_IOS) && !defined(GEODE_IS_ANDROID32) && !defined(GEODE_IS_ANDROID64)
             PlatformToolbox::hideCursor();
             #endif
-            // 0.75s grace period to pause and exit
-            std::thread([]() {
-                std::this_thread::sleep_for(std::chrono::duration<double>(0.75));
-                PlayLayer::get()->resetLevel();
-                return;
-            }).detach();
+            // turns out i also cant use std::thread
+            // double whoops!              - sneefum
+
+            // 1 second grace period to pause and exit
+            geode::async::spawn(
+                arc::sleep(asp::Duration::fromSecs(1)),
+                []{ PlayLayer::get()->resetLevel(); }
+            ).detach();
         } else {
             m_input_a->setString("");
             m_input_b->setString("");
