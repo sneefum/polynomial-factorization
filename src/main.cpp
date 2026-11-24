@@ -1,9 +1,11 @@
 #include <ctime>
 #include <cmath>
 #include <format>
+#include <future>
+#include <thread>
+#include <chrono>
 #include <cstdlib>
 #include <algorithm>
-
 #include <fmt/format.h>
 
 #include <Geode/Geode.hpp>
@@ -21,6 +23,7 @@
 #include <Geode/binding/PlayLayer.hpp>
 #include <Geode/binding/GameObject.hpp>
 #include <Geode/binding/PlayerObject.hpp>
+#include <Geode/binding/PlatformToolbox.hpp>
 
 using namespace geode::prelude;
 
@@ -45,6 +48,23 @@ $on_mod(Loaded) {
     listenForSettingChanges<int>("range", [](int value) {
         range = value;
     });
+}
+
+std::string filterNumbers(std::string const& text) {
+    std::string result = "";
+
+    for (int i = 0; i < text.size(); i++) {
+        char c = text[i];
+
+        if (std::isdigit(c)) {
+            result += c;
+        }
+        else if (c == '-' && i == 0) {
+            result += c;
+        }
+    }
+
+    return result;
 }
 
 class PolynomialPopup : public geode::Popup {
@@ -130,34 +150,88 @@ protected:
         m_mainLayer->addChild(label);
         
         if (degree == 2) {
-            m_input_a = TextInput::create(100.f, "Solution A");
+            m_input_a = TextInput::create(100.f, "Root 1");
             m_input_a->setPosition({185.f, 60.f});
+            m_input_a->setCallback([this](const std::string& text) {
+                auto filtered = filterNumbers(text);
+                if (text != filtered) {
+                    m_input_a->setString(filtered);
+                }
+            });
             m_mainLayer->addChild(m_input_a);
-            m_input_b = TextInput::create(100.f, "Solution B");
+            m_input_b = TextInput::create(100.f, "Root 2");
             m_input_b->setPosition({295.f, 60.f});
+            m_input_b->setCallback([this](const std::string& text) {
+                auto filtered = filterNumbers(text);
+                if (text != filtered) {
+                    m_input_b->setString(filtered);
+                }
+            });
             m_mainLayer->addChild(m_input_b);
         } else if (degree == 3) {
-            m_input_a = TextInput::create(100.f, "Solution A");
+            m_input_a = TextInput::create(100.f, "Root 1");
             m_input_a->setPosition({130.f, 60.f});
+            m_input_a->setCallback([this](const std::string& text) {
+                auto filtered = filterNumbers(text);
+                if (text != filtered) {
+                    m_input_a->setString(filtered);
+                }
+            });
             m_mainLayer->addChild(m_input_a);
-            m_input_b = TextInput::create(100.f, "Solution B");
+            m_input_b = TextInput::create(100.f, "Root 2");
             m_input_b->setPosition({240.f, 60.f});
+            m_input_b->setCallback([this](const std::string& text) {
+                auto filtered = filterNumbers(text);
+                if (text != filtered) {
+                    m_input_b->setString(filtered);
+                }
+            });
             m_mainLayer->addChild(m_input_b);
-            m_input_c = TextInput::create(100.f, "Solution C");
+            m_input_c = TextInput::create(100.f, "Root 3");
             m_input_c->setPosition({350.f, 60.f});
+            m_input_c->setCallback([this](const std::string& text) {
+                auto filtered = filterNumbers(text);
+                if (text != filtered) {
+                    m_input_c->setString(filtered);
+                }
+            });
             m_mainLayer->addChild(m_input_c);
         } else {
-            m_input_a = TextInput::create(100.f, "Solution A");
+            m_input_a = TextInput::create(100.f, "Root 1");
             m_input_a->setPosition({75.f, 60.f});
+            m_input_a->setCallback([this](const std::string& text) {
+                auto filtered = filterNumbers(text);
+                if (text != filtered) {
+                    m_input_a->setString(filtered);
+                }
+            });
             m_mainLayer->addChild(m_input_a);
-            m_input_b = TextInput::create(100.f, "Solution B");
+            m_input_b = TextInput::create(100.f, "Root 2");
             m_input_b->setPosition({185.f, 60.f});
+            m_input_b->setCallback([this](const std::string& text) {
+                auto filtered = filterNumbers(text);
+                if (text != filtered) {
+                    m_input_b->setString(filtered);
+                }
+            });
             m_mainLayer->addChild(m_input_b);
-            m_input_c = TextInput::create(100.f, "Solution C");
+            m_input_c = TextInput::create(100.f, "Root 3");
             m_input_c->setPosition({295.f, 60.f});
+            m_input_c->setCallback([this](const std::string& text) {
+                auto filtered = filterNumbers(text);
+                if (text != filtered) {
+                    m_input_c->setString(filtered);
+                }
+            });
             m_mainLayer->addChild(m_input_c);
-            m_input_d = TextInput::create(100.f, "Solution D");
+            m_input_d = TextInput::create(100.f, "Root 4");
             m_input_d->setPosition({405.f, 60.f});
+            m_input_d->setCallback([this](const std::string& text) {
+                auto filtered = filterNumbers(text);
+                if (text != filtered) {
+                    m_input_d->setString(filtered);
+                }
+            });
             m_mainLayer->addChild(m_input_d);
         }
 
@@ -227,8 +301,25 @@ protected:
         if (correct) {
             answered = true;
             this->onClose(nullptr);
-            PlayLayer::get()->resetLevel();
+            // cursor function has been moved here
+            #if !defined(GEODE_IS_IOS) && !defined(GEODE_IS_ANDROID32) && !defined(GEODE_IS_ANDROID64)
+            PlatformToolbox::hideCursor();
+            #endif
+            // 0.75s grace period to pause and exit
+            std::thread([]() {
+                std::this_thread::sleep_for(std::chrono::duration<double>(0.75));
+                PlayLayer::get()->resetLevel();
+                return;
+            }).detach();
+        } else {
+            m_input_a->setString("");
+            m_input_b->setString("");
+            if (m_degree >= 3)
+                m_input_c->setString("");
+            if (m_degree >= 4)
+                m_input_d->setString("");
         }
+        return;
     }
 
     void keyBackClicked() override {} // no esc key for you!! :3
@@ -263,7 +354,7 @@ class $modify(MyPlayLayer, PlayLayer) {
                 d = (rand() % ((range * 2) + 1)) - range;
                 answered = false;
                 #if !defined(GEODE_IS_IOS) && !defined(GEODE_IS_ANDROID32) && !defined(GEODE_IS_ANDROID64) // phones dont have cursors
-                director->getOpenGLView()->showCursor(true);
+                PlatformToolbox::showCursor();
                 #endif
                 PolynomialPopup::create(polynomial_degree, a, b, c, d)->show();
             }
@@ -278,9 +369,6 @@ class $modify(MyPlayLayer, PlayLayer) {
         if (!answered) {
             return;
         } else {
-            #if !defined(GEODE_IS_IOS) && !defined(GEODE_IS_ANDROID32) && !defined(GEODE_IS_ANDROID64)
-            director->getOpenGLView()->showCursor(false);
-            #endif
             PlayLayer::resetLevel();
         }
     }

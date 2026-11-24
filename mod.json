@@ -8,7 +8,7 @@
 	},
 	"id": "sneefum.polynomial-factorization",
 	"name": "Polynomial Factorization",
-	"version": "v1.0.1",
+	"version": "v1.0.2",
 	"developer": "sneefum",
 	"description": "For when you want to play GD but you have a math test tomorrow",
     "links": {
@@ -36,7 +36,7 @@
             "type": "int",
             "min": 1,
             "max": 100,
-            "default": 20,
+            "default": 5,
             "control": {
                 "slider": true
             }
