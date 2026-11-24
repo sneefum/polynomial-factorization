@@ -268,7 +268,13 @@ protected:
             // 1 second grace period to pause and exit
             geode::async::spawn(
                 arc::sleep(asp::Duration::fromSecs(1)),
-                []{ PlayLayer::get()->resetLevel(); }
+                // if you exit the level before this one second timer finishes the game will crash
+                []{ 
+                    auto pl = PlayLayer::get();
+                    if (pl) {
+                        pl->resetLevel(); 
+                    }
+                }
             ).detach();
         } else {
             m_input_a->setString("");

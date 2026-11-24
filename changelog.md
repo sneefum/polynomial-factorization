@@ -1,3 +1,6 @@
+# 1.0.4
+- Fixed a crash if you exited a level too fast after solving a polynomial
+
 # 1.0.3
 - Increased the exit window to 1 second
 - Switched async library to the Geode one instead of the standard library one
